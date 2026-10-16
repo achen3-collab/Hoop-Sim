@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Preview Hoop Sim website",
+			"type": "shell",
+			"command": "python3 server.py",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
