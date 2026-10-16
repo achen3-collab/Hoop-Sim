@@ -12,6 +12,12 @@ python3 server.py
 
 Open http://localhost:8000. The default stat season is 2025–26. Drafts, lineups, team names, and roster sizes are saved in browser local storage.
 
+## Publish on GitHub Pages
+
+The `Deploy to GitHub Pages` workflow publishes the static site and its JSON data whenever a commit is pushed to `main`. In the repository's **Settings → Pages**, set the build and deployment source to **GitHub Actions**. After the workflow completes, GitHub Pages will show the public site URL in the Pages settings and in the workflow run.
+
+GitHub Pages serves only static files: the **Catch up now** and **Update live stats** actions need the Python server and are not available on Pages. To publish refreshed data, update the JSON files in `data/` and push the changes to `main`. CSV uploads and browser-saved drafts and lineups remain local to each visitor's browser. All published files, including player and schedule data, are publicly accessible.
+
 ## Publish on PythonAnywhere
 
 The site can run as a public, read-only WSGI app. Create a PythonAnywhere web app using Python 3.10 or later, upload the project to `/home/<username>/Hoop-Sim`, and configure its WSGI file to import the project entry point:
