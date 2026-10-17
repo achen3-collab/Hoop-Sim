@@ -385,10 +385,17 @@ function renderLiveData(){
 function renderRosterPool(){
   let query=document.querySelector("#roster-pool-search").value.toLowerCase().trim();
   let liveById=new Map((liveSeason==="2026-27"?livePlayers:[]).map(p=>[String(p.id),p]));
+  let liveByName=new Map();
+  for(let player of liveById.values()){
+    let name=String(player.name||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+    if(!name)continue;
+    liveByName.set(name,liveByName.has(name)?null:player);
+  }
   let list=rosterPoolPlayers.filter(p=>`${p.name||""} ${p.team||""}`.toLowerCase().includes(query));
   document.querySelector("#roster-pool-count").textContent=`${list.length} players`;
   document.querySelector("#roster-pool-rows").innerHTML=list.map(person=>{
-    let current=liveById.get(String(person.id)),stats=current?.stats?.GP?current.stats:(person.stats||person),games=Number(stats.GP||0);
+    let name=String(person.name||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+    let current=liveById.get(String(person.id))||liveByName.get(name),stats=current?.stats?.GP?current.stats:(person.stats||person),games=Number(stats.GP||0);
     let stat=(key,digits=1)=>games&&stats[key]!==undefined?liveStat(stats[key],digits):"–";
     let percent=key=>games&&Number.isFinite(Number(stats[key]))?`${(Number(stats[key])*100).toFixed(1)}%`:"–";
     return`<tr><td class="roster-pool-name">${esc(person.name)}</td><td>${esc(person.team||"–")}</td><td>${stat("MIN")}</td><td>${percent("FG_PCT")}</td><td>${percent("FT_PCT")}</td><td>${percent("FG3_PCT")}</td><td>${stat("PTS")}</td><td>${stat("REB")}</td><td>${stat("AST")}</td><td>${stat("STL")}</td><td>${stat("BLK")}</td><td>${stat("TOV")}</td><td>${games&&stats.PER!==undefined?liveStat(stats.PER):"–"}</td></tr>`;

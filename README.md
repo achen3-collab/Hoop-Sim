@@ -18,6 +18,20 @@ The `Deploy to GitHub Pages` workflow publishes the static site and its JSON dat
 
 GitHub Pages serves only static files: the **Catch up now** and **Update live stats** actions need the Python server and are not available on Pages. To publish refreshed data, update the JSON files in `data/` and push the changes to `main`. CSV uploads and browser-saved drafts and lineups remain local to each visitor's browser. All published files, including player and schedule data, are publicly accessible.
 
+### Publish CSV stats to both Draft and Data
+
+To publish a complete per-game CSV as shared stats, use a local copy of this repository with Python 3.10 or later. The CSV must have one row per player per game and include player name, game date, and at least one supported stat column. NBA Stats LeagueGameLog CSV headers are supported.
+
+First preview the update, replacing the path and season with your own:
+
+```bash
+python3 scripts/publish_csv_stats.py /path/to/game-logs.csv --season 2026-27 --dry-run
+```
+
+If the preview is correct, run the command again without `--dry-run`. It writes `data/live-players-<season>.json` for the Data tab and updates the matching `data/players[-<season>].json` Draft pool for players whose names match unambiguously. Unmatched players stay in the Data pool but are not added to Draft, because their roster and position details cannot be inferred safely. The CSV must contain the complete game log for the season; it replaces the published Data pool for that season.
+
+Review the changed JSON files, then commit and push them to `main`. GitHub Actions will redeploy the site, and the shared Draft and Data stats will update for visitors. These JSON files are public. The website's **Upload CSV** button remains a browser-only upload and does not publish files.
+
 ## Publish on PythonAnywhere
 
 The site can run as a public, read-only WSGI app. Create a PythonAnywhere web app using Python 3.10 or later, upload the project to `/home/<username>/Hoop-Sim`, and configure its WSGI file to import the project entry point:
