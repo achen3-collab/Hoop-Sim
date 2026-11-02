@@ -17,3 +17,7 @@
 @media(max-width:1050px){.shell{padding:0 22px}}
 @media(max-width:900px){.roster-table{min-width:1050px;table-layout:auto}.daily-roster-table{min-width:1050px}}
 @media(max-width:760px){.shell{padding:0 14px}}
+.daily-roster-table th:nth-child(2),.daily-roster-table td:nth-child(2){width:145px}
+.daily-roster-table th:nth-child(3),.daily-roster-table td:nth-child(3){width:110px}
+.daily-roster-table .schedule-game{white-space:normal;font-size:9px}
+@media(max-width:1200px){.daily-roster-table{min-width:1100px;table-layout:auto}}
