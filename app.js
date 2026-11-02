@@ -248,7 +248,7 @@ function autoSetLineup(){
 }
 document.querySelector("#auto-set-lineup").onclick=autoSetLineup;
 
-let livePlayers=[],liveSeason="",liveLoadSequence=0,selectedLivePlayerId="",rosterPoolPlayers=[];
+let livePlayers=[],liveSeason="",liveLoadSequence=0,selectedLivePlayerId="",rosterPoolPlayers=[],liveDataSource="";
 function liveStat(value,digits=1){let number=Number(value);return Number.isFinite(number)?number.toFixed(digits):"–"}
 function liveDate(value){let date=new Date(`${value}T12:00:00`);return Number.isNaN(date.getTime())?esc(value):date.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}
 function updateLiveSyncStamp(timestamp){
@@ -380,6 +380,7 @@ function renderLiveData(){
     ["LATEST GAME",latest?liveDate(latest.date):"–",null],
   ].map(([label,value,digits])=>`<div class="live-stat"><span>${label}</span><strong>${digits===null?esc(value):liveStat(value,digits)}</strong></div>`).join("");
   rows.innerHTML=logs.map(game=>`<tr><td>${liveDate(game.date)}</td><td>${esc(game.matchup||game.team||"–")}</td><td>${liveStat(game.MIN)}</td><td>${liveStat(game.PTS,0)}</td><td>${liveStat(game.REB,0)}</td><td>${liveStat(game.AST,0)}</td><td>${liveStat(game.STL,0)}</td><td>${liveStat(game.BLK,0)}</td><td>${liveStat(game.FG3M,0)}</td><td>${liveStat(game.FG_PCT*100)}%</td><td>${liveStat(game.FT_PCT*100)}%</td><td>${liveStat(game.PLUS_MINUS,0)}</td></tr>`).join("");
+  empty.querySelector("p").textContent=liveDataSource==="CSV season totals"?"This CSV contains season totals only; individual box scores aren't available.":"Use Update live stats to fetch the selected season's completed game logs. The tracker refreshes its local data every five minutes.";
   empty.classList.toggle("visible",!logs.length);
 }
 function renderRosterPool(){
@@ -436,21 +437,27 @@ async function loadLiveData(season){
     if(uploaded){
       livePlayers=uploaded.players||[];
       liveSeason=season;
+      liveDataSource=uploaded.source||"CSV upload";
       updateLiveSyncStamp(uploaded.lastSyncedAt);
-      document.querySelector("#live-data-status").textContent=`${livePlayers.length.toLocaleString()} players · ${Number(uploaded.gameCount||0).toLocaleString()} games · imported from CSV ${new Date(uploaded.lastSyncedAt).toLocaleString()}. This browser's CSV data is active.`;
+      document.querySelector("#live-data-status").textContent=liveDataSource==="CSV season totals"
+        ?`${livePlayers.length.toLocaleString()} players · season totals imported ${new Date(uploaded.lastSyncedAt).toLocaleString()}. Individual game logs aren't included.`
+        :`${livePlayers.length.toLocaleString()} players · ${Number(uploaded.gameCount||0).toLocaleString()} games · imported from CSV ${new Date(uploaded.lastSyncedAt).toLocaleString()}. This browser's CSV data is active.`;
     }else{
       let response=await fetch(`data/live-players-${season}.json?t=${Date.now()}`);
       if(sequence!==liveLoadSequence)return;
-      if(response.status===404){livePlayers=[];liveSeason=season;updateLiveSyncStamp(null);document.querySelector("#live-data-status").textContent=`No ${season} game logs synced yet. Update live stats or upload a game-log CSV.`}
+      if(response.status===404){livePlayers=[];liveSeason=season;liveDataSource="";updateLiveSyncStamp(null);document.querySelector("#live-data-status").textContent=`No ${season} game logs synced yet. Update live stats or upload a game-log CSV.`}
       else if(!response.ok)throw Error(`Live game-log request failed (${response.status}).`);
       else{
         let pool=await response.json();
         if(sequence!==liveLoadSequence)return;
         livePlayers=pool.players||[];
         liveSeason=season;
+        liveDataSource=pool.source||"synced data";
         updateLiveSyncStamp(pool.lastSyncedAt);
         let synced=pool.lastSyncedAt?new Date(pool.lastSyncedAt).toLocaleString():"sync time unavailable";
-        document.querySelector("#live-data-status").textContent=`${livePlayers.length.toLocaleString()} players · ${Number(pool.gameCount||0).toLocaleString()} games · synced ${synced}. Completed box scores update after games finish.`;
+        document.querySelector("#live-data-status").textContent=liveDataSource==="CSV season totals"
+          ?`${livePlayers.length.toLocaleString()} players · season totals published ${synced}. Individual game logs aren't included.`
+          :`${livePlayers.length.toLocaleString()} players · ${Number(pool.gameCount||0).toLocaleString()} games · synced ${synced}. Completed box scores update after games finish.`;
       }
     }
     updateCsvControls(season);
@@ -458,6 +465,7 @@ async function loadLiveData(season){
     if(sequence!==liveLoadSequence)return;
     console.error(error);
     livePlayers=[];
+    liveDataSource="";
     liveSeason=season;
     document.querySelector("#clear-live-csv").hidden=true;
     updateLiveSyncStamp(null);

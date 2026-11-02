@@ -24,6 +24,25 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Publish CSV player stats
+        run: |
+          shopt -s nullglob
+          for season in 2024-25 2025-26 2026-27; do
+            csv_files=(data/csv/"${season}"*.csv)
+            if [ "${#csv_files[@]}" -gt 1 ]; then
+              echo "Expected at most one CSV for ${season}; found ${#csv_files[@]}." >&2
+              exit 1
+            fi
+            if [ "${#csv_files[@]}" -eq 1 ]; then
+              python scripts/publish_csv_stats.py "${csv_files[0]}" --season "$season"
+            fi
+          done
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

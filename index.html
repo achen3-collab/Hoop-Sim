@@ -39,7 +39,7 @@
       <section class="panel live-data-panel">
         <div class="panel-head"><div><p class="eyebrow">SEASON TRACKER</p><h2 id="live-player-heading">Select a player</h2></div><span class="live-tag">● COMPLETED GAMES</span></div>
         <div id="live-data-status" class="live-data-status" role="status" aria-live="polite">Loading completed game logs…</div>
-        <p class="live-csv-help">CSV must contain one row per player per game, with date and player name columns. NBA Stats headers (such as GAME_DATE, PLAYER_NAME, PTS, REB, AST) are supported. Upload the complete log; CSV data replaces this season's prior upload and stays in this browser.</p>
+        <p class="live-csv-help">Browser upload requires one row per player per game, with date and player name columns. NBA Stats headers (such as GAME_DATE, PLAYER_NAME, PTS, REB, AST) are supported. Upload the complete log; CSV data replaces this season's prior upload and stays in this browser. To publish season totals from the repository, add a season-total CSV to data/csv/ and push it to main.</p>
         <div id="live-player-summary" class="live-player-summary"></div>
         <div class="table-scroll live-game-scroll"><table class="data-table live-game-table"><thead><tr><th>DATE</th><th>MATCHUP</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>3PM</th><th>FG%</th><th>FT%</th><th>+/-</th></tr></thead><tbody id="live-game-rows"></tbody></table></div>
         <div class="empty-state" id="live-game-empty"><b>No completed games to show</b><p>Use Update live stats to fetch the selected season's completed game logs. The tracker refreshes its local data every five minutes.</p></div>

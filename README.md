@@ -16,21 +16,21 @@ Open http://localhost:8000. The default stat season is 2025–26. Drafts, lineup
 
 The `Deploy to GitHub Pages` workflow publishes the static site and its JSON data whenever a commit is pushed to `main`. In the repository's **Settings → Pages**, set the build and deployment source to **GitHub Actions**. After the workflow completes, GitHub Pages will show the public site URL in the Pages settings and in the workflow run.
 
-GitHub Pages serves only static files: the **Catch up now** and **Update live stats** actions need the Python server and are not available on Pages. To publish refreshed data, update the JSON files in `data/` and push the changes to `main`. CSV uploads and browser-saved drafts and lineups remain local to each visitor's browser. All published files, including player and schedule data, are publicly accessible.
+GitHub Pages serves only static files: the **Catch up now** and **Update live stats** actions need the Python server and are not available on Pages. To publish refreshed data, update the JSON files in `data/` and push the changes to `main`, or add a complete game-log CSV as described below. CSV uploads and browser-saved drafts and lineups remain local to each visitor's browser. All published files, including player and schedule data, are publicly accessible.
 
 ### Publish CSV stats to both Draft and Data
 
-To publish a complete per-game CSV as shared stats, use a local copy of this repository with Python 3.10 or later. The CSV must have one row per player per game and include player name, game date, and at least one supported stat column. NBA Stats LeagueGameLog CSV headers are supported.
+To publish a CSV through GitHub, upload or commit it to `data/csv/` with a filename beginning with the season, such as `data/csv/2026-27.csv` or `data/csv/2026-27-player-season-totals.csv`, then push the commit to `main`. Keep at most one CSV per season in this folder. The deployment workflow processes CSVs for `2024-25`, `2025-26`, and `2026-27` before publishing the site. It accepts either a complete per-game CSV or a season-totals CSV with `season`, `player_name`, `team`, `games_played`, and stat columns like the supplied season-total format. For a season-total CSV, it uses season totals and games played to calculate per-game stats; that file does not provide individual box scores or PER. The workflow updates the Data pool and the matching Draft pool from the same CSV, so players matched unambiguously have identical stats in both pools. Unmatched players remain in Data and are not added to Draft because their roster and position details cannot be inferred safely. Each deployment replaces that season's published Data pool from the CSV.
 
-First preview the update, replacing the path and season with your own:
+To preview or publish locally instead, use Python 3.10 or later. Game-log CSVs must have one row per player per game and include player name, game date, and at least one supported stat column. NBA Stats LeagueGameLog CSV headers are supported. Season-total CSVs need one row per player, a season, player name, games played, and at least one stat column. First preview the update:
 
 ```bash
 python3 scripts/publish_csv_stats.py /path/to/game-logs.csv --season 2026-27 --dry-run
 ```
 
-If the preview is correct, run the command again without `--dry-run`. It writes `data/live-players-<season>.json` for the Data tab and updates the matching `data/players[-<season>].json` Draft pool for players whose names match unambiguously. Unmatched players stay in the Data pool but are not added to Draft, because their roster and position details cannot be inferred safely. The CSV must contain the complete game log for the season; it replaces the published Data pool for that season.
+If the preview is correct, run the command again without `--dry-run`. It writes `data/live-players-<season>.json` for the Data tab and updates the matching `data/players[-<season>].json` Draft pool for players whose names match unambiguously.
 
-Review the changed JSON files, then commit and push them to `main`. GitHub Actions will redeploy the site, and the shared Draft and Data stats will update for visitors. These JSON files are public. The website's **Upload CSV** button remains a browser-only upload and does not publish files.
+The CSV will be public in the GitHub repository, and the generated JSON data will be publicly accessible on the site. The website's **Upload CSV** button remains a browser-only game-log upload and does not publish files.
 
 ## Publish on PythonAnywhere
 
