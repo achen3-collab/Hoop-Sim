@@ -400,7 +400,7 @@ function renderRosterPool(){
     let stat=(key,digits=1)=>games&&stats[key]!==undefined?liveStat(stats[key],digits):"–";
     let percent=key=>games&&Number.isFinite(Number(stats[key]))?`${(Number(stats[key])*100).toFixed(1)}%`:"–";
     let estimatedPer=current?.estimatedPER??person.estimatedPER??stats.estimatedPER;
-    return`<tr><td class="roster-pool-name">${esc(person.name)}</td><td>${esc(person.team||"–")}</td><td>${Number.isFinite(Number(person.yahooAdp))?Number(person.yahooAdp).toFixed(1):"–"}</td><td>${stat("MIN")}</td><td>${percent("FG_PCT")}</td><td>${percent("FT_PCT")}</td><td>${stat("FG3M")}</td><td>${percent("FG3_PCT")}</td><td>${stat("PTS")}</td><td>${stat("REB")}</td><td>${stat("AST")}</td><td>${stat("STL")}</td><td>${stat("BLK")}</td><td>${stat("TOV")}</td><td>${games&&stats.PER!==undefined?liveStat(stats.PER):"–"}</td><td>${estimatedPer!==null&&estimatedPer!==undefined&&Number.isFinite(Number(estimatedPer))?Number(estimatedPer).toFixed(1):"–"}</td></tr>`;
+    return`<tr><td class="roster-pool-name">${esc(person.name)}</td><td>${esc(person.team||"–")}</td><td>${Number.isFinite(Number(person.yahooAdp))?Number(person.yahooAdp).toFixed(1):"–"}</td><td>${stat("MIN")}</td><td>${percent("FG_PCT")}</td><td>${percent("FT_PCT")}</td><td>${stat("FG3M")}</td><td>${percent("FG3_PCT")}</td><td>${stat("PTS")}</td><td>${stat("REB")}</td><td>${stat("AST")}</td><td>${stat("STL")}</td><td>${stat("BLK")}</td><td>${stat("TOV")}</td><td>${estimatedPer!==null&&estimatedPer!==undefined&&Number.isFinite(Number(estimatedPer))?Number(estimatedPer).toFixed(1):"–"}</td></tr>`;
   }).join("");
   document.querySelector("#roster-pool-empty").classList.toggle("visible",!list.length);
 }
