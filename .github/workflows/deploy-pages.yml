@@ -43,6 +43,9 @@ jobs:
             fi
           done
 
+      - name: Calculate estimated PER
+        run: python scripts/calculate_estimated_per.py
+
       - name: Sort pools by Yahoo ADP
         run: python scripts/apply_yahoo_adp.py
 
