@@ -28,7 +28,7 @@ To preview or publish locally instead, use Python 3.10 or later. Game-log CSVs m
 python3 scripts/publish_csv_stats.py /path/to/game-logs.csv --season 2026-27 --dry-run
 ```
 
-If the preview is correct, run the command again without `--dry-run`. It writes `data/live-players-<season>.json` for the Data tab and updates the matching `data/players[-<season>].json` Draft pool for players whose names match unambiguously.
+If the preview is correct, run the command again without `--dry-run`. It writes `data/live-players-<season>.json` for the Data tab and updates the matching `data/players[-<season>].json` Draft pool for players whose names match unambiguously. For 2026–27, then run `python3 scripts/apply_yahoo_adp.py` to refresh the ADP values and ordering in both pools.
 
 The CSV will be public in the GitHub repository, and the generated JSON data will be publicly accessible on the site. The website's **Upload CSV** button remains a browser-only game-log upload and does not publish files.
 
@@ -81,6 +81,8 @@ Open the **Data** tab and choose **Update live stats** to fetch completed NBA pl
 Use **Upload CSV** to import your own per-game box scores, including on static hosting where the sync API is unavailable. The CSV needs one row per player per game, a player-name column (`PLAYER_NAME` or `NAME`), a date column (`GAME_DATE` or `DATE`), and at least one stat column such as `PTS`, `REB`, `AST`, or `MIN`. NBA Stats LeagueGameLog CSV headers are supported; player ID, team, matchup, shooting attempts/makes, percentages, and PER are optional. The import calculates season averages and weighted shooting percentages from game rows. It replaces the uploaded CSV data for that season in this browser; upload the complete set of game rows when replacing it. Choose **Use synced data** to remove the browser's CSV override and return to the hosted JSON pool. CSV imports are saved only in that browser and do not update the site's files for other visitors.
 
 The Data tab also includes a 2026–27 roster pool made from the active team rosters plus the 2026 draft class, including drafted players not yet listed on a team roster. It shows per-game minutes, shooting percentages, points, rebounds, assists, steals, blocks, turnovers, and NBA Player Efficiency Rating (PER). PER is a rating, not a percentage; stats remain blank until a player has appeared in a game. The live importer fetches PER from NBA advanced player stats.
+
+The 2026–27 Draft and Data player pools are ordered by Yahoo average draft position (lowest ADP first); players without a Yahoo ADP appear alphabetically afterward. ADP values are shown in both pools and come from the snapshot in `data/yahoo-adp-2026-27.json`, sourced from [Hashtag Basketball's ADP table](https://hashtagbasketball.com/fantasy-basketball-adp), which compares Yahoo, ESPN, and Fantrax draft data. The deployment workflow reapplies this snapshot after generating CSV-based stats.
 
 ## Fantasy model
 

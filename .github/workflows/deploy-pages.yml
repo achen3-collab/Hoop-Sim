@@ -43,6 +43,9 @@ jobs:
             fi
           done
 
+      - name: Sort pools by Yahoo ADP
+        run: python scripts/apply_yahoo_adp.py
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
